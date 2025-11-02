@@ -66,7 +66,17 @@ org.example
 
 ## 🚀 快速开始
 
-运行jar包，在浏览器中访问：**http://localhost:8080**
+### 编译并打包
+```bash
+mvn clean package
+```
+
+### 运行
+```bash
+java -jar target/FlappyBirdPro-1.0-SNAPSHOT.jar
+```
+
+然后在浏览器中访问：**http://localhost:8080**
 
 ## 🎯 游戏玩法
 
