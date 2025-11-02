@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlappyBird Pro - 游戏</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="game-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="nav-left">
+                <img th:src="@{/images/bird.svg}" alt="Bird" class="nav-logo">
+                <span class="nav-title">FlappyBird Pro</span>
+            </div>
+            <div class="nav-center">
+                <span class="welcome-text">欢迎, <span th:text="${user.nickname}"></span>!</span>
+            </div>
+            <div class="nav-right">
+                <a th:href="@{/profile}" class="nav-link">个人记录</a>
+                <a th:href="@{/leaderboard}" class="nav-link">排行榜</a>
+                <a th:href="@{/logout}" class="nav-link">退出</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 游戏容器 -->
+    <div class="game-container">
+        <!-- 游戏信息面板 -->
+        <div class="game-info-panel">
+            <div class="info-item">
+                <span class="info-label">当前分数</span>
+                <span class="info-value" id="currentScore">0</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">最高分</span>
+                <span class="info-value" id="highScore" th:text="${user.highestScore}">0</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">道具数</span>
+                <span class="info-value" id="powerUpCount">0</span>
+            </div>
+            <div class="info-item active-powerup" id="activePowerUp" style="display: none;">
+                <span class="powerup-icon">⚡</span>
+                <span class="powerup-name" id="powerUpName"></span>
+                <span class="powerup-timer" id="powerUpTimer"></span>
+            </div>
+        </div>
+
+        <!-- 游戏区域 - Canvas和技能并排 -->
+        <div class="game-area">
+            <!-- 主动技能面板 - 左侧 -->
+            <div class="skills-panel-side">
+                <div class="skill-item" id="excaliburSkill">
+                    <div class="skill-icon">🗡️</div>
+                    <div class="skill-info">
+                        <div class="skill-name">咖喱棒</div>
+                        <div class="skill-key">E</div>
+                        <div class="skill-cooldown" id="excaliburCooldown">准备就绪</div>
+                    </div>
+                </div>
+                
+                <div class="skill-item skill-purple" id="timeRewindSkill">
+                    <div class="skill-icon">⏪</div>
+                    <div class="skill-info">
+                        <div class="skill-name">时间倒流</div>
+                        <div class="skill-key">Q</div>
+                        <div class="skill-cooldown" id="timeRewindCooldown">准备就绪</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 游戏Canvas -->
+            <div class="game-canvas-wrapper">
+            <canvas id="gameCanvas" width="480" height="640"></canvas>
+            
+            <!-- 游戏开始界面 -->
+            <div id="startScreen" class="game-overlay">
+                <h2>FlappyBird Pro</h2>
+                <div class="game-instructions">
+                    <p>🐦 点击屏幕或按空格键控制小鸟飞行</p>
+                    <p>🎯 避开管道，获取高分！</p>
+                    <p>⚡ 收集道具获得被动能力：</p>
+                    <ul>
+                        <li>🛡️ 护盾 - 3秒无敌保护</li>
+                        <li>⭐ 加分 - 5秒内得分翻倍</li>
+                        <li>🔻 缩小 - 5秒内体积缩小</li>
+                    </ul>
+                    <p>🗡️ 主动技能：</p>
+                    <ul>
+                        <li>咖喱棒 - 按E键释放，清除前方所有管道！</li>
+                        <li>时间倒流 - 按Q键释放，回到3秒前！</li>
+                    </ul>
+                </div>
+                <div class="difficulty-selector">
+                    <button class="btn btn-difficulty" data-difficulty="EASY">简单</button>
+                    <button class="btn btn-difficulty btn-selected" data-difficulty="NORMAL">普通</button>
+                    <button class="btn btn-difficulty" data-difficulty="HARD">困难</button>
+                </div>
+                <button id="startBtn" class="btn btn-primary btn-large">开始游戏</button>
+            </div>
+            
+            <!-- 游戏结束界面 -->
+            <div id="gameOverScreen" class="game-overlay" style="display: none;">
+                <h2>游戏结束</h2>
+                <div class="game-result">
+                    <p>得分: <span id="finalScore">0</span></p>
+                    <p>收集道具: <span id="finalPowerUps">0</span> 个</p>
+                    <p>游戏时长: <span id="gameDuration">0</span> 秒</p>
+                    <p id="newHighScore" style="display: none; color: #ffd700; font-weight: bold;">
+                        🎉 新纪录！
+                    </p>
+                </div>
+                <button id="restartBtn" class="btn btn-primary btn-large">再玩一次</button>
+                <button id="backToStartBtn" class="btn btn-secondary btn-large">重新选择难度</button>
+                <a th:href="@{/leaderboard}" class="btn btn-secondary btn-large">查看排行榜</a>
+            </div>
+        </div>
+        </div>
+
+        <!-- 游戏说明 -->
+        <div class="game-tips">
+            <h3>游戏提示</h3>
+            <ul>
+                <li>🎮 使用鼠标点击或空格键控制小鸟</li>
+                <li>🗡️ 按E键释放咖喱棒，清除前方所有管道！</li>
+                <li>⏪ 按Q键释放时间倒流，回到3秒前的状态！</li>
+                <li>📊 通过管道得1分，收集道具得额外奖励</li>
+                <li>💡 合理使用道具和技能可以获得更高分数</li>
+                <li>⏱️ 咖喱棒冷却20秒，时间倒流冷却25秒</li>
+                <li>🏆 挑战全球排行榜，成为最强玩家！</li>
+            </ul>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var userId = /*[[${user.id}]]*/ 0;
+        var currentHighScore = /*[[${user.highestScore}]]*/ 0;
+        /*]]>*/
+    </script>
+    <script th:src="@{/js/game.js}"></script>
+</body>
+</html>
+

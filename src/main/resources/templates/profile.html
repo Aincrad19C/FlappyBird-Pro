@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlappyBird Pro - 个人记录</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="profile-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="nav-left">
+                <img th:src="@{/images/bird.svg}" alt="Bird" class="nav-logo">
+                <span class="nav-title">FlappyBird Pro</span>
+            </div>
+            <div class="nav-center">
+                <span class="welcome-text">欢迎, <span th:text="${user.nickname}"></span>!</span>
+            </div>
+            <div class="nav-right">
+                <a th:href="@{/game}" class="nav-link">返回游戏</a>
+                <a th:href="@{/leaderboard}" class="nav-link">排行榜</a>
+                <a th:href="@{/logout}" class="nav-link">退出</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="content-container">
+        <h1 class="page-title">📊 个人中心</h1>
+        
+        <!-- 用户统计信息 -->
+        <div class="profile-stats">
+            <div class="stat-card">
+                <div class="stat-icon">🏆</div>
+                <div class="stat-info">
+                    <div class="stat-value" th:text="${user.highestScore}">0</div>
+                    <div class="stat-label">最高分</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">🎮</div>
+                <div class="stat-info">
+                    <div class="stat-value" th:text="${gameCount}">0</div>
+                    <div class="stat-label">游戏次数</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">👤</div>
+                <div class="stat-info">
+                    <div class="stat-value" th:text="${user.nickname}">昵称</div>
+                    <div class="stat-label">玩家昵称</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">📅</div>
+                <div class="stat-info">
+                    <div class="stat-value" th:text="${#temporals.format(user.createdAt, 'yyyy-MM-dd')}">2024-01-01</div>
+                    <div class="stat-label">注册时间</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 游戏记录列表 -->
+        <div class="records-section">
+            <h2>游戏记录</h2>
+            <div class="records-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>分数</th>
+                            <th>道具数</th>
+                            <th>难度</th>
+                            <th>时长</th>
+                            <th>时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="record : ${userRecords}">
+                            <td class="score" th:text="${record.score}">0</td>
+                            <td th:text="${record.powerUpsCollected}">0</td>
+                            <td>
+                                <span class="difficulty-badge" 
+                                      th:classappend="${#strings.toLowerCase(record.difficultyLevel)}"
+                                      th:text="${record.difficultyLevel}">NORMAL</span>
+                            </td>
+                            <td th:text="${record.gameDuration} + 's'">0s</td>
+                            <td th:text="${#temporals.format(record.createdAt, 'yyyy-MM-dd HH:mm:ss')}">时间</td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(userRecords)}">
+                            <td colspan="5" class="no-data">
+                                <p>还没有游戏记录</p>
+                                <a th:href="@{/game}" class="btn btn-primary">开始游戏</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 成就系统 -->
+        <div class="achievements-section">
+            <h2>成就系统</h2>
+            <div class="achievements-grid">
+                <div class="achievement-card" th:classappend="${user.highestScore >= 10} ? 'achieved' : 'locked'">
+                    <div class="achievement-icon">🎯</div>
+                    <div class="achievement-name">初出茅庐</div>
+                    <div class="achievement-desc">获得10分以上</div>
+                </div>
+                
+                <div class="achievement-card" th:classappend="${user.highestScore >= 50} ? 'achieved' : 'locked'">
+                    <div class="achievement-icon">⭐</div>
+                    <div class="achievement-name">技巧纯熟</div>
+                    <div class="achievement-desc">获得50分以上</div>
+                </div>
+                
+                <div class="achievement-card" th:classappend="${user.highestScore >= 100} ? 'achieved' : 'locked'">
+                    <div class="achievement-icon">🏆</div>
+                    <div class="achievement-name">飞行大师</div>
+                    <div class="achievement-desc">获得100分以上</div>
+                </div>
+                
+                <div class="achievement-card" th:classappend="${user.totalGames >= 10} ? 'achieved' : 'locked'">
+                    <div class="achievement-icon">🎮</div>
+                    <div class="achievement-name">坚持不懈</div>
+                    <div class="achievement-desc">游玩10局以上</div>
+                </div>
+                
+                <div class="achievement-card" th:classappend="${user.totalGames >= 50} ? 'achieved' : 'locked'">
+                    <div class="achievement-icon">💪</div>
+                    <div class="achievement-name">铁杆玩家</div>
+                    <div class="achievement-desc">游玩50局以上</div>
+                </div>
+                
+                <div class="achievement-card" th:classappend="${user.highestScore >= 200} ? 'achieved' : 'locked'">
+                    <div class="achievement-icon">👑</div>
+                    <div class="achievement-name">传奇飞手</div>
+                    <div class="achievement-desc">获得200分以上</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+

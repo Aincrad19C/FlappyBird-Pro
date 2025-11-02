@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlappyBird Pro - 排行榜</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body class="leaderboard-page">
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-content">
+            <div class="nav-left">
+                <img th:src="@{/images/bird.svg}" alt="Bird" class="nav-logo">
+                <span class="nav-title">FlappyBird Pro</span>
+            </div>
+            <div class="nav-center">
+                <span class="welcome-text">欢迎, <span th:text="${user.nickname}"></span>!</span>
+            </div>
+            <div class="nav-right">
+                <a th:href="@{/game}" class="nav-link">返回游戏</a>
+                <a th:href="@{/profile}" class="nav-link">个人记录</a>
+                <a th:href="@{/logout}" class="nav-link">退出</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="content-container">
+        <h1 class="page-title">🏆 全球排行榜</h1>
+        
+        <div class="leaderboard-tabs">
+            <button class="tab-btn active" data-tab="players">玩家排行</button>
+            <button class="tab-btn" data-tab="records">单局记录</button>
+        </div>
+
+        <!-- 玩家排行榜 -->
+        <div id="playersTab" class="tab-content active">
+            <div class="leaderboard-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>排名</th>
+                            <th>玩家</th>
+                            <th>最高分</th>
+                            <th>游戏次数</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="player, iterStat : ${topPlayers}" 
+                            th:classappend="${player.id == user.id} ? 'current-user' : ''">
+                            <td class="rank">
+                                <span th:if="${iterStat.index == 0}" class="medal gold">🥇</span>
+                                <span th:if="${iterStat.index == 1}" class="medal silver">🥈</span>
+                                <span th:if="${iterStat.index == 2}" class="medal bronze">🥉</span>
+                                <span th:if="${iterStat.index > 2}" th:text="${iterStat.index + 1}"></span>
+                            </td>
+                            <td th:text="${player.nickname}">玩家昵称</td>
+                            <td class="score" th:text="${player.highestScore}">0</td>
+                            <td th:text="${player.totalGames}">0</td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(topPlayers)}">
+                            <td colspan="4" class="no-data">暂无排行数据</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 单局记录排行榜 -->
+        <div id="recordsTab" class="tab-content">
+            <div class="leaderboard-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>排名</th>
+                            <th>分数</th>
+                            <th>道具数</th>
+                            <th>难度</th>
+                            <th>时长</th>
+                            <th>时间</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="record, iterStat : ${topRecords}" 
+                            th:classappend="${record.userId == user.id} ? 'current-user' : ''">
+                            <td class="rank">
+                                <span th:if="${iterStat.index == 0}" class="medal gold">🥇</span>
+                                <span th:if="${iterStat.index == 1}" class="medal silver">🥈</span>
+                                <span th:if="${iterStat.index == 2}" class="medal bronze">🥉</span>
+                                <span th:if="${iterStat.index > 2}" th:text="${iterStat.index + 1}"></span>
+                            </td>
+                            <td class="score" th:text="${record.score}">0</td>
+                            <td th:text="${record.powerUpsCollected}">0</td>
+                            <td>
+                                <span th:text="${record.difficultyLevel}" 
+                                      th:classappend="${record.difficultyLevel}"></span>
+                            </td>
+                            <td th:text="${record.gameDuration} + 's'">0s</td>
+                            <td th:text="${#temporals.format(record.createdAt, 'MM-dd HH:mm')}">时间</td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(topRecords)}">
+                            <td colspan="6" class="no-data">暂无记录数据</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 标签切换功能
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const tabName = this.dataset.tab;
+                
+                // 移除所有active类
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                
+                // 添加active类到当前标签
+                this.classList.add('active');
+                document.getElementById(tabName + 'Tab').classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>
+

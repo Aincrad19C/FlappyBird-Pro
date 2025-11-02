@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="birdGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFA500;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Bird body -->
+  <ellipse cx="50" cy="50" rx="35" ry="28" fill="url(#birdGradient)" stroke="#FF8C00" stroke-width="2"/>
+  
+  <!-- Wing -->
+  <ellipse cx="40" cy="55" rx="20" ry="12" fill="#FFA500" opacity="0.8"/>
+  
+  <!-- Eye -->
+  <circle cx="60" cy="40" r="8" fill="white"/>
+  <circle cx="63" cy="40" r="5" fill="black"/>
+  <circle cx="64" cy="38" r="2" fill="white"/>
+  
+  <!-- Beak -->
+  <polygon points="75,45 90,50 75,55" fill="#FF6347"/>
+  <line x1="75" y1="50" x2="85" y2="50" stroke="#CC4433" stroke-width="1"/>
+  
+  <!-- Tail -->
+  <path d="M 15 50 Q 5 40, 10 35 Q 8 50, 10 65 Q 5 60, 15 50" fill="#FFA500"/>
+</svg>
+
